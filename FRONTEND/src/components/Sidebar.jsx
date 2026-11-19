@@ -110,6 +110,10 @@ export default function Sidebar({
         <div className="p-3 pb-2 space-y-2.5">
           <Button
             onClick={() => {
+              if (!user) {
+                onOpenAuth();
+                return;
+              }
               onNewConsultation();
               if (window.innerWidth < 768) onClose();
             }}

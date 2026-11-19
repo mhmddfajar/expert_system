@@ -175,6 +175,12 @@ export default function App() {
 
   // Kirim pesan keluhan
   const handleSend = async (customMessage) => {
+    // Wajib login untuk melakukan konsultasi
+    if (!user) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+
     const textToSend = customMessage || input;
     if (!textToSend.trim() || loading) return;
 
@@ -426,7 +432,13 @@ export default function App() {
                   {quickSymptoms.map((q, idx) => (
                     <button
                       key={idx}
-                      onClick={() => handleSend(q.text)}
+                      onClick={() => {
+                        if (!user) {
+                          setIsAuthModalOpen(true);
+                          return;
+                        }
+                        handleSend(q.text);
+                      }}
                       className="bg-white hover:bg-sky-50 text-slate-700 hover:text-sky-700 border border-slate-200 hover:border-sky-300 text-xs font-medium px-3.5 py-2 rounded-xl transition shadow-2xs active:scale-95 cursor-pointer text-left flex items-center gap-1.5"
                     >
                       <span>{q.label}</span>
@@ -724,6 +736,12 @@ export default function App() {
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
+                onFocus={() => {
+                  if (!user) setIsAuthModalOpen(true);
+                }}
+                onClick={() => {
+                  if (!user) setIsAuthModalOpen(true);
+                }}
                 placeholder="Ketik keluhan atau jawab pertanyaan dokter..."
                 className="flex-1 border-0 shadow-none focus-visible:ring-0 text-xs sm:text-sm bg-transparent px-1 placeholder:text-slate-400 h-8"
                 disabled={loading}
@@ -735,7 +753,7 @@ export default function App() {
 
               <Button
                 type="submit"
-                disabled={loading || !input.trim()}
+                disabled={loading || (user && !input.trim())}
                 className="bg-sky-600 hover:bg-sky-700 text-white rounded-xl h-8 w-8 p-0 flex items-center justify-center cursor-pointer shadow-xs active:scale-95 transition shrink-0"
               >
                 <Send className="w-3.5 h-3.5" />
